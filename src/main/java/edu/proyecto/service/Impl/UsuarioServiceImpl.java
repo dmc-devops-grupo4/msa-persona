@@ -1,16 +1,17 @@
-package edu.proyecto.service.Impl;
+package edu.cibertec.service.Impl;
 
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import edu.proyecto.dto.UsuarioDTO;
-import edu.proyecto.entity.PersonaEntity;
-import edu.proyecto.entity.UsuarioEntity;
-import edu.proyecto.mapper.UsuarioMapper;
-import edu.proyecto.repository.PersonaRepository;
-import edu.proyecto.repository.UsuarioRepository;
-import edu.proyecto.service.UsuarioService;
+import edu.cibertec.dto.UsuarioDTO;
+import edu.cibertec.entity.PersonaEntity;
+import edu.cibertec.entity.UsuarioEntity;
+import edu.cibertec.mapper.UsuarioMapper;
+import edu.cibertec.repository.PersonaRepository;
+import edu.cibertec.repository.UsuarioRepository;
+import edu.cibertec.service.UsuarioService;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService{
@@ -20,6 +21,7 @@ public class UsuarioServiceImpl implements UsuarioService{
     private PersonaRepository personaRepository;
 
     UsuarioMapper mapper = Mappers.getMapper(UsuarioMapper.class);
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
     public UsuarioDTO validarUsuario(Integer idTipoPersona, Integer idTipoDocIdentidad, String nroDocumento, String password) {
@@ -36,7 +38,7 @@ public class UsuarioServiceImpl implements UsuarioService{
             throw new RuntimeException("El usuario no existe");
         }
 
-        if(!usuario.getPassword().equals(password)){
+        if(!passwordEncoder.matches(password, usuario.getPassword())){
             throw new RuntimeException("Las credenciales ingresadas son incorrectas");
         }
 
@@ -44,7 +46,11 @@ public class UsuarioServiceImpl implements UsuarioService{
             throw new RuntimeException("El usuario no ha sido verificado");
         }
 
-        UsuarioDTO usuarioDto = mapper.usuarioEntityToUsuarioDto(usuario);
+        UsuarioDTO usuarioDto = new UsuarioDTO();
+        usuarioDto.setIdUsuario(usuario.getIdUsuario());
+        usuarioDto.setVerificado(usuario.getVerificado());
+        usuarioDto.setFechaVerificacion(usuario.getFechaVerificacion());
+        usuarioDto.setActivo(Boolean.TRUE.equals(usuario.getActivo()));
         usuarioDto.setIdPersona(persona.getIdPersona());
         usuarioDto.setNombres(persona.getNombres());
         usuarioDto.setApellidoPaterno(persona.getApellidoPaterno());
