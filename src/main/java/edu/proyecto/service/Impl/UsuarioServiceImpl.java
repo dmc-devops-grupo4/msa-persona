@@ -1,17 +1,17 @@
-package edu.cibertec.service.Impl;
+package edu.proyecto.service.Impl;
 
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import edu.cibertec.dto.UsuarioDTO;
-import edu.cibertec.entity.PersonaEntity;
-import edu.cibertec.entity.UsuarioEntity;
-import edu.cibertec.mapper.UsuarioMapper;
-import edu.cibertec.repository.PersonaRepository;
-import edu.cibertec.repository.UsuarioRepository;
-import edu.cibertec.service.UsuarioService;
+import edu.proyecto.dto.UsuarioDTO;
+import edu.proyecto.entity.PersonaEntity;
+import edu.proyecto.entity.UsuarioEntity;
+import edu.proyecto.mapper.UsuarioMapper;
+import edu.proyecto.repository.PersonaRepository;
+import edu.proyecto.repository.UsuarioRepository;
+import edu.proyecto.service.UsuarioService;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService{
