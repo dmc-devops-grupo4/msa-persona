@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import edu.proyecto.dto.PersonaDTO;
@@ -28,14 +26,12 @@ import edu.proyecto.repository.TipoDocIdentidadRepository;
 import edu.proyecto.repository.TipoPersonaRepository;
 import edu.proyecto.repository.UbigeoRepository;
 import edu.proyecto.repository.UsuarioRepository;
+import edu.proyecto.repository.NotificacionRepository;
 import edu.proyecto.service.PersonaService;
 import edu.proyecto.utils.Helper;
 
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class PersonaServiceImpl implements PersonaService{
@@ -51,12 +47,7 @@ public class PersonaServiceImpl implements PersonaService{
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    private KafkaTemplate kafkaTemplate;
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Value("${topico.registro-persona}")
-    private String topicoRegistroPersona;
+    private NotificacionRepository notificacionRepository;
 
     PersonaMapper mapper = Mappers.getMapper(PersonaMapper.class);
 
@@ -125,20 +116,10 @@ public class PersonaServiceImpl implements PersonaService{
         usuarioEntity.setRegUsuarioCreacion("DEFAULT"); 
 
         usuarioRepository.save(usuarioEntity);
-
-        try {
-            String jsonMessage = objectMapper.writeValueAsString(
+        notificacionRepository.notificarRegistroPersona(
                 new EmailRegistroPersonaDTO(
                     personaEntity.getCorreo(), 
-                    personaEntity.getNombres()
-                ));
-    
-            System.out.println("Mensaje: " + jsonMessage);
-            kafkaTemplate.send(topicoRegistroPersona, jsonMessage);
-
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+                    personaEntity.getNombres()));
 
         return mapper.personaEntityToPersonaDto(personaEntity);
     }
