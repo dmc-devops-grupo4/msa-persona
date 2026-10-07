@@ -38,7 +38,7 @@ public class UsuarioServiceImpl implements UsuarioService{
             throw new RuntimeException("El usuario no existe");
         }
 
-        if(!passwordEncoder.matches(password, usuario.getPassword())){
+        if(!passwordValido(password, usuario.getPassword())){
             throw new RuntimeException("Las credenciales ingresadas son incorrectas");
         }
 
@@ -58,6 +58,17 @@ public class UsuarioServiceImpl implements UsuarioService{
         usuarioDto.setNroDocumento(persona.getNroDocumento());
 
         return usuarioDto;
+    }
+
+    // Acepta claves con BCrypt y claves en texto plano (datos de carga inicial)
+    private boolean passwordValido(String password, String guardado) {
+        if (guardado == null) {
+            return false;
+        }
+        if (guardado.startsWith("$2a$") || guardado.startsWith("$2b$") || guardado.startsWith("$2y$")) {
+            return passwordEncoder.matches(password, guardado);
+        }
+        return guardado.equals(password);
     }
 
 }

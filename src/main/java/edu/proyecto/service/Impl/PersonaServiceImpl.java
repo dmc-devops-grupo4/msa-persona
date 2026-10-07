@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import edu.proyecto.dto.PersonaDTO;
@@ -108,7 +109,7 @@ public class PersonaServiceImpl implements PersonaService{
 
         UsuarioEntity usuarioEntity = new UsuarioEntity();
         usuarioEntity.setPersona(personaEntity);
-        usuarioEntity.setPassword(personaDto.getPassword());
+        usuarioEntity.setPassword(new BCryptPasswordEncoder().encode(personaDto.getPassword()));
         usuarioEntity.setCodigoVerificacion(UUID.randomUUID().toString());
         usuarioEntity.setVerificado(true);
         usuarioEntity.setActivo(true);
